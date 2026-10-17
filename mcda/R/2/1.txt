@@ -1,0 +1,437 @@
+#
+# in file https://thalis.math.upatras.gr/~vpiperig/MCDA-YDA/Lab_1_CP.txt
+# are treated the examples discussed in 
+# https://eclass.upatras.gr/modules/units/?course=MATH1145&id=11092
+# Desciptive Statistics
+#
+
+###############################################
+# Example 4
+# from file https://thalis.math.upatras.gr/~vpiperig/MCDA-YDA/Lab_1_CP.txt
+#
+
+x<-scan()
+-100 36 42 -5
+2 35 38 5
+4 38 53 -11
+6 34 -23 -3
+8 29 -33 -2
+12 9 -15 95
+15 10 -16 92
+13 30 -17 -60
+25 27 -9 33
+23 100 -4 -33
+
+summary(x)
+
+y<-quantile(x)
+y
+
+quantile(x,  probs = c(0.1, 0.5, 1, 2, 5, 10, 50, NA)/100)
+
+help(quantile)  # Type 7 is used by S
+	        # Type 6 is used by Minitab and by SPSS
+### Compare different types
+res <- matrix(as.numeric(NA), 9, 5)
+for(type in 1:9) res[type, ] <- quantile(x, type = type)
+
+res
+dimnames(res) <- list(1:9, names(y))
+round(res, 4)
+
+###############################################
+# suvexeia paradeigmatos
+#
+
+par(mfrow=c(2,1));
+boxplot(x,horizontal=T);
+plot(x,rep(1,length(x)));
+par(mfrow=c(1,1));
+
+###############################################
+#
+# another example, data form R
+#
+
+attach(InsectSprays);
+help(InsectSprays);
+InsectSprays;
+
+InsectSprays$count;
+InsectSprays$spray;
+
+boxplot(count, data = InsectSprays, col="grey");  # all data of count
+
+boxplot(count[spray=="A"], data = InsectSprays, col="grey"); 
+# only data for insecticide A
+
+boxplot(count ~ spray, data = InsectSprays, col=2:7);
+
+x<-count[spray=="C"];
+par(mfrow=c(2,1));
+boxplot(x,horizontal=T);
+plot(x,rep(1,length(x)));
+par(mfrow=c(1,1));
+
+###############################################
+# Example 3
+# from file https://thalis.math.upatras.gr/~vpiperig/MCDA-YDA/Lab_1_CP.txt
+#
+
+x<-c(5,7,7,7,9,8)
+x
+x
+x<-c(2,3,2,8,7,60,5,3,4)
+sort(x)
+mean(x)
+boxplot(x)
+mean(x, trim = 0.05)
+mean(x, trim = 0.11)
+mean(x, trim = 1/length(x))
+mean(x, trim = 2/length(x))
+mean(x, trim = 3/length(x))
+
+wt <- c(rep(1,length(x)-1),  0)/(length(x)-1)
+wt
+sort(x)
+weighted.mean(sort(x), wt)
+wt <- c(0,rep(1,length(x)-2),  0)/(length(x)-2)
+wt
+weighted.mean(sort(x), wt)
+mean(x, trim = 1/length(x))
+
+###############################################
+# Example 2
+# from file https://thalis.math.upatras.gr/~vpiperig/MCDA-YDA/Lab_1_CP.txt
+#
+
+f<-c(5,11,20,9,13,7)
+x<-seq(5,55,10)
+y<-rep(x,f)      # SOS for the calculation of mean and var
+x
+f
+y
+
+mean(y)  # SOS
+var(y)   # SOS
+
+hist(y) # it is not correct here, requires quidance 
+
+hist(y, breaks = c(seq(0,60,10)),labels =as.character(f),freq = TRUE)
+hist(y, breaks = c(seq(0,60,10)),labels =as.character(round(f/sum(f),2)),freq = FALSE)
+
+p<-hist(y, breaks = c(seq(0,60,10)),labels =as.character(f),xaxt = "n",freq = TRUE,col = "lightblue")
+p
+axis(1, c(seq(0,60,10)))
+lines(p$mids,p$counts,lwd=2)
+
+hist(y, breaks = c(seq(0,60,10)),xaxt = "n",freq = FALSE,col = "lightblue")
+axis(1, c(seq(0,60,10)))
+lines(density(y),type="l",lwd=3)
+
+###############################################
+# Example 1
+# from file https://thalis.math.upatras.gr/~vpiperig/MCDA-YDA/Lab_1_CP.txt
+#
+
+age<-rep(c("<30","30-50",">50"),c(7,9,4))
+age
+age<-c(age,rep(c("<30","30-50",">50"),c(1,10,0)))
+age
+age<-c(age,rep(c("<30","30-50",">50"),c(4,10,4)))
+age<-c(age,rep(c("<30","30-50",">50"),c(5,27,1)))
+age
+age<-factor(age,levels=c("<30","30-50",">50"))
+age
+
+sex<-rep(c("M","F"),c(20,11))
+sex<-c(sex,rep(c("M","F"),c(18,33)))
+sex<-factor(sex,levels=c("M","F"))
+sex
+
+type<-rep(c("Serious","Minor"),c(31,51))
+injury<-data.frame(age,sex,type)
+injury
+
+with(injury, table(age, sex, type))
+
+par(mfrow=c(2,2))
+x<-table(injury)[,,1]
+barplot(x,legend = TRUE,ylim = c(0, 80))   # with respect to sex
+x<-t(table(injury)[,,1])                   # the transpose
+barplot(x,legend = rownames(x))            # with respect to age
+x<-table(injury)[,,2]
+barplot(x,legend = rownames(x),ylim = c(0, 30),col=c("lightblue", "mistyrose",
+"lightcyan"), beside = TRUE)
+x<-t(table(injury)[,,2])
+barplot(x,legend = rownames(x),col=c("blue","pink"), beside = TRUE)
+par(mfrow=c(1,1))
+tapply(count,spray,mean) # deigmatikos mesos xwpista gia ka8e spray
+mean(count)
+
+###############################################
+#
+# another example, data form R
+#
+attach(InsectSprays)
+count
+spray
+
+tapply(count,spray,mean) # deigmatikos mesos xwpista gia ka8e spray
+mean(count)
+
+tapply(count,spray,sd)   # tupikn apoklisn xwpista gia ka8e spray
+sd(count)
+
+table(spray)
+x<-table(spray)
+
+barplot(x,legend = TRUE,col=2:6,ylim = c(0, 30))
+
+pie(x)   # we can do better
+
+labels(x)
+labels(x)$spray
+lbls <-labels(x)$spray
+pct <- round(x/sum(x)*100,1)
+pct
+labels(x)
+labels(x)$spray
+lbls <-labels(x)$spray
+pct <- round(x/sum(x)*100,1)
+pct
+lbls <- paste(lbls, pct) # add percents to labels
+lbls
+lbls <- paste(lbls,"%",sep="") # ad % to labels
+lbls
+pie(x,labels = lbls, col=rainbow(length(lbls)),
+main="Pie Chart of Sprays")
+
+###############################################
+#
+#  Simulation and theoretical probabilities
+#  for discrete distibutions
+#
+
+# Poisson
+
+M<-5000
+z<-rpois(M,2.5) # tuxaio deigma mege8ous 5000 apo Poisson(2.5)
+
+mean(z)
+var(z)
+
+z
+f<-table(z)
+f
+barplot(f)
+
+f/M
+barplot(f/M)
+
+
+dpois(0:10,2.5)
+round(dpois(0:10,2.5),4)
+f/M
+
+plot(0:10,dpois(0:10,2.5))   # we can do better
+plot(0:10,dpois(0:10,2.5),type="h")   # we can do even better
+
+x<-0:10
+plot(x,dpois(x,2.5), type="h", col=4, lwd = 30, lend=1, 
+main="Poisson(2.5)",xlab="x",ylab="P(X=x)",cex.lab=1.5,
+ylim=c(0,0.3),cex.axis=1.2,las=1)
+
+table(z)
+sum(z<=2)
+sum(z<=2)/M
+ppois(2,2.5)   # apoistikn suvartnsn katavomns sto 2, 
+               # cdf (cummulative distribution function)
+               # oti eivai mwb sto sxnma
+
+plot(x,dpois(x,2.5), type = "h",col = c(6,6,6,rep(4,8)),lwd = 30,lend=1, 
+main="Poisson(2.5)",xlab="x",ylab="P(X=x)",cex.lab=1.5,
+ylim=c(0,0.3),cex.axis=1.2,las=1)
+
+ppois(0:10,2.5)
+ppois(0:100,2.5)
+
+#
+# Binomial
+#
+
+dbinom(-5:15,10,0.5)                         # n=10 trials 
+plot(-5:15,dbinom(-5:15,10,0.5),type="h")    # p=1/2 probability of success
+
+plot(0:10,dbinom(0:10,10,0.5),type="h")  # keep it simple
+
+
+plot(0:10,dbinom(0:10,10,2/6),type="h") # n=10 p=2/6<0.5
+plot(0:10,dbinom(0:10,10,1/6),type="h") # n=10 p=1/6<0.5
+
+plot(0:10,dbinom(0:10,10,4/6),type="h") # n=10 p=4/6>0.5
+plot(0:10,dbinom(0:10,10,5/6),type="h") # n=10 p=5/6>0.5
+
+# au3avw to n
+plot(0:20,dbinom(0:20,20,1/2),type="h") # n=20
+plot(0:20,dbinom(0:20,20,1/4),type="h")
+plot(0:20,dbinom(0:20,20,3/4),type="h")
+
+plot(0:50,dbinom(0:50,50,1/2),type="h") # n=50
+plot(0:50,dbinom(0:50,50,1/4),type="h")
+plot(0:50,dbinom(0:50,50,3/4),type="h")
+
+plot(0:100,dbinom(0:100,100,1/2),type="h") # n=100
+plot(0:100,dpois(0:100,50),type="h")  # compare with Poisson(100*1/2) ?
+
+plot(0:100,dbinom(0:100,100,1/4),type="h") # n=100
+plot(0:100,dpois(0:100,25),type="h")  # compare with Poisson(100*1/4) ??
+
+plot(0:100,dbinom(0:100,100,3/4),type="h") # n=100
+plot(0:100,dpois(0:100,75),type="h")  # compare with Poisson(100*3/4) ??
+
+plot(0:500,dbinom(0:500,500,1/2),type="h") # n=500
+plot(0:500,dpois(0:500,250),type="h")  # compare with Poisson(500*1/2) ?
+
+plot(0:500,dbinom(0:500,500,1/4),type="h") # n=500
+plot(0:500,dpois(0:500,125),type="h")  # compare with Poisson(500*1/4) 
+
+plot(0:500,dbinom(0:500,500,3/4),type="h") # n=100
+plot(0:500,dpois(0:500,375),type="h")  # compare with Poisson(500*3/4) ??
+
+
+###############################################
+#
+#  Simulation and theoretical densities
+#  for continuous distibutions
+#
+
+# Uniform U(0,1)
+
+M<-1000
+u1<-runif(M)
+u1
+hist(u1)
+
+hist(u1,prob=T)
+curve(dunif, add=T,lwd=2)
+
+u2<-runif(M)
+hist(u1+u2)
+hist(u1-u2)
+hist(u1-u2,prob=T)
+lines(density(u1-u2),lwd=2)
+
+u3<-runif(M)
+hist(u1+u2+u3,breaks=30)
+
+
+
+# Normal N(0,1)
+
+M<-5000
+z<-rnorm(M)
+mean(z)
+sd(z)
+
+hist(z,prob=T)
+
+hist(z,prob=T,breaks=30)
+curve(dnorm,add=T)
+
+# Normal N(2,5^2)
+
+X<-rnorm(M,2,5)      # 5 is the sd not the var
+
+hist(X,prob=T,breaks=40)
+curve(dnorm(x,mean=2,sd=5),add=TRUE,col=2,lwd=2)
+
+
+Z<-(X-mean(X))/sd(X)        # standardized using sample values of mean, var
+hist(Z,prob=T,breaks=40)
+curve(dnorm,add=TRUE,col=2,lwd=2)
+
+
+z1<-(X-2)/5                 # standardized using theoretical mean, var
+hist(z1,prob=T,breaks=40)   
+curve(dnorm,add=TRUE,col=2,lwd=2)
+
+###############################################
+#
+# from file https://thalis.math.upatras.gr/~vpiperig/MCDA-YDA/Lab_2_EE.txt 
+#
+# Sample distributions, sample mean and sample variance, for Normal r.v.
+#
+
+M<-1000
+x1<-rnorm(M)
+x2<-rnorm(M)
+x3<-rnorm(M)
+x4<-rnorm(M)
+x<-data.frame(x1,x2,x3,x4)
+x
+
+apply(x,1,mean)
+apply(x,2,mean)
+
+Z<-apply(x,1,mean) # sample mean from 4 observations Z=(x1+x2+x3+x4)/4
+                   # (x1+x2+x3+x4)/4 ~ N(E(x1),var(x1)/4)
+summary(Z) 
+mean(Z)            # kovta sto 0
+var(Z)             # kovta sto 1/4
+
+hist(Z,breaks=50,probability=TRUE)
+curve(dnorm(x,mean=0,sd=1/sqrt(4)),add=TRUE,col=3,lwd=2)
+
+
+apply(x,2,mean)    # afora xwrista tis x1, x2, x3, x4. Kovta sto 0
+apply(x,2,var)     # Kovta sto 1
+
+
+S2<-apply(x,1,var) # sample variance from 4 observations 
+                   # S^2=[(x1-Z)^2+(x2-Z)^2+(x3-Z)^2+(x4-Z)^2]/[4-1]
+                   # [4-1]*S^2 ~ X^2 with 3 df that is Gamma(3/2,2)
+
+summary(3*S2)
+mean(3*S2)        # kovta sto 3/2*2=3
+var(3*S2)         # kovta sto (3/2)*2^2=6
+
+hist(3*S2,breaks=50,probability=TRUE)
+curve(dchisq(x,df=3),add=TRUE,col=3,lwd=2)
+
+###############################################
+#
+# from file https://thalis.math.upatras.gr/~vpiperig/MCDA-YDA/Lab_2_EE.txt 
+#
+# Creat normal observations from uniform observations
+# 
+# Box-Muller method 
+# 
+# for this part use the online compiler 
+# 
+# https://rdrr.io/snippets/
+#
+# since for the plot the library(ggplot2) and library(ggExtra)
+# are required
+
+M<-1000
+U1<-runif(M)
+U2<-runif(M)
+
+R<-sqrt(-2*log(U1))
+Theta<-2*pi*U2
+Z1<-R*cos(Theta)
+Z2<-R*sin(Theta)
+Z<-data.frame(Z1,Z2)
+
+cov(Z)
+cor(Z)    # Z1, Z2 are independent
+
+library(ggplot2)
+library(ggExtra)
+
+p<-ggplot(Z, aes(x=Z1, y=Z2))+
+  geom_point() +
+  theme_classic()
+
+ggMarginal(p, type="histogram",bins=30,xparams=list(colour="blue",fill="red")) 
