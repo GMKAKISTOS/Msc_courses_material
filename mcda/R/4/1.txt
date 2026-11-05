@@ -1,0 +1,295 @@
+devAskNewPage(ask=TRUE)  
+
+##################################################
+#  N(m,s^2) Confidence Interval for m, s^2 known
+#
+
+# movov egw gvwpizw to m
+# m<--1
+# sigma<-3  
+# x<-rnorm(10,m,sigma)
+# ks.test(x,"pnorm",mean=-1,sd=3)
+
+
+x<-scan()
+-1.26 -2.05  3.77  3.88 -2.24  0.13 -2.47  0.18  4.90 -1.76
+
+
+sigma<-3  #sas to divw
+          #  sd(x) eivai kovta sto 3
+n<-length(x)
+n
+Mx<-mean(x)
+Mx
+# 95% Conf Inter for m
+a<-0.05
+c(Mx+qnorm(a/2)*sigma/sqrt(n),Mx+qnorm(1-a/2)*sigma/sqrt(n))
+#c(Mx-qnorm(1-a/2)*sigma/sqrt(n),Mx-qnorm(a/2)*sigma/sqrt(n))
+
+# 90% Conf Inter for m
+a<-0.10
+c(Mx+qnorm(a/2)*sigma/sqrt(n),Mx+qnorm(1-a/2)*sigma/sqrt(n))
+
+for (a in c(0.05,0.1,0.2)){
+cat("s.e. 1-a=",1-a,
+"LB=",round(Mx+qnorm(a/2)*sigma/sqrt(n),4),
+"UB=",round(Mx+qnorm(1-a/2)*sigma/sqrt(n),4),"\n")
+}
+
+##################################################
+#  N(m,s^2) Confidence Interval for m, s^2 unknown
+#
+
+#############################################################################
+# exw movo tis deigmatikes parametrous
+
+n<-12
+Mx<-65
+S<-3
+cat("n=",n,"Mx=",Mx,"S^2=",S^2,"\n")
+for (a in c(0.05,0.1,0.2)){
+cat("s.e. 1-a=",1-a,"  t",n-1,"(",a/2,")=",round(qt(1-a/2,n-1),3),
+"  [",round(Mx+qt(a/2,n-1)*S/sqrt(n),4),",",
+round(Mx+qt(1-a/2,n-1)*S/sqrt(n),4),"]","\n")
+}
+
+#############################################################################
+# exw oloklnpo to deigma
+
+x<-scan()
+0.2 -0.5 -1.3 -1.6 -0.7 0.4 -0.1 0.0 -0.6 -1.1 -1.2 -0.8
+
+n<-length(x)
+Mx<-mean(x)
+S<-sd(x)
+cat("n=",n,"Mx=",Mx,"S^2=",var(x),"\n")
+# 95% Conf Inter for m
+# METHOD A
+a<-0.05
+c(Mx+qt(a/2,n-1)*S/sqrt(n),Mx+qt(1-a/2,n-1)*S/sqrt(n))
+#c(Mx-qt(1-a/2,n-1)*S/sqrt(n),Mx-qt(a/2,n-1)*S/sqrt(n))
+
+# METHOD B   1-a=0.95
+t.test(x)
+
+#############################################################
+# 1-a=0.90
+
+a<-0.1
+# METHOD A
+c(Mx+qt(a/2,n-1)*S/sqrt(n),Mx+qt(1-a/2,n-1)*S/sqrt(n))
+# METHOD B 
+t.test(x,conf.level=1-a)
+
+
+#############################################################
+# Elegxoi upo8esns m0=0
+###############################
+
+t.test(x)
+t.test(x,alternative="greater")    
+t.test(x,alternative="less")
+
+m0<-0
+t<-(Mx-m0)/S*sqrt(n)
+pvalue.ne<-2*min(pt(t,n-1),1-pt(t,n-1))
+pvalue.g<-1-pt(t,n-1)
+pvalue.l<-pt(t,n-1)
+round(c(t,n-1,pvalue.ne,pvalue.g,pvalue.l),4)
+
+#############################################################
+# Elegxoi upo8esns m0=-0.8
+###############################
+
+m0<--0.8
+t<-(Mx-m0)/S*sqrt(n)
+pvalue.ne<-2*min(pt(t,n-1),1-pt(t,n-1))
+pvalue.g<-1-pt(t,n-1)
+pvalue.l<-pt(t,n-1)
+round(c(t,n-1,pvalue.ne,pvalue.g,pvalue.l),4)
+
+t.test(x,mu=m0)
+t.test(x,mu=m0,alternative="greater")    
+t.test(x,mu=m0,alternative="less")
+
+t.test(x,mu=m0,conf.level=0.9)
+t.test(x,mu=m0,conf.level=0.7)
+t.test(x,mu=m0,conf.level=1-0.3168)
+
+##################################################
+#  N(m,s^2) Confidence Interval for s^2, m unknown
+#
+
+#############################################################################
+
+x<-scan()
+-1.26 -2.05  3.77  3.88 -2.24  0.13 -2.47  0.18  4.90 -1.76
+
+
+n<-length(x)
+S2<-var(x)
+a<-0.05
+c(S2*(n-1)/qchisq(1-a/2,n-1),S2*(n-1)/qchisq(a/2,n-1))
+cat("n=",n,"Mx=",Mx,"S^2=",S2,"\n")
+for (a in c(0.05,0.1,0.2)){
+cat("s.e. 1-a=",1-a,"  X^2",n-1,"(",1-a/2,")=",round(qchisq(a/2,n-1),3),
+	"  X^2",n-1,"(",a/2,")=",round(qchisq(1-a/2,n-1),3),
+	"  [",round(S2*(n-1)/qchisq(1-a/2,n-1),4),",",
+round(S2*(n-1)/qchisq(a/2,n-1),4),"]","\n")
+}
+
+#######################################################################
+#  Asymptotic Confidence Interval for p (percentage)
+#
+
+# METHOD A
+a<-0.05
+n<-500
+p<-311/n
+c(p+qnorm(a/2)*sqrt(p*(1-p)/n),p+qnorm(1-a/2)*sqrt(p*(1-p)/n))
+
+
+# METHOD B
+prop.test(311,500); prop.test(311,500,correct = FALSE)
+
+# METHOD C
+binom.test(311,500)
+
+a<-0.10
+
+prop.test(311,500,conf.level= 1-a); 
+prop.test(311,500,conf.level= 1-a,correct = FALSE);
+binom.test(311,500,conf.level= 1-a)
+
+#####################################################################
+#
+# test for percentage
+#
+#
+
+a<-0.05
+n<-700
+x<-400
+p<-x/n
+p0<-0.6
+
+# METHOD A
+#z1<-(p-p0)/sqrt(p*(1-p)/n)
+z<-(p-p0)/sqrt(p0*(1-p0)/n)
+c(abs(z)<qnorm(1-a/2),z<qnorm(1-a),z>qnorm(a))
+
+pvalue.ne<-2*min(pnorm(z),1-pnorm(z))
+pvalue.g<-1-pnorm(z); pvalue.l<-pnorm(z)
+cat(p,z,"z a/2=",qnorm(1-a/2),"z a=",qnorm(1-a),"-z a=",qnorm(a),"\n");
+cat(pvalue.ne,pvalue.g,pvalue.l,"\n")
+
+
+# METHOD B
+prop.test(x,n,p0); prop.test(x,n,p0,correct = FALSE)
+
+# METHOD C
+binom.test(x,n,p=p0,conf.level= 0.80)
+
+binom.test(400,700,p=0.6,alternative="greater",conf.level= 0.90)
+binom.test(400,700,p=0.6,alternative="less",conf.level= 0.90)
+
+####################################################################
+
+a<-0.1
+p0<-0.6
+z<-(p-p0)/sqrt(p0*(1-p0)/n)
+c(abs(z)<qnorm(1-a/2),z<qnorm(1-a),z>qnorm(a))
+
+prop.test(x,n,p=p0,conf.level= 1-a);
+prop.test(x,n,p=p0,alternative="greater",conf.level= 1-a);
+prop.test(x,n,p=p0,alternative="less",conf.level= 1-a)
+binom.test(x,n,p=p0,conf.level= 1-a);
+binom.test(x,n,p=p0,alternative="greater",conf.level= 1-a)
+binom.test(x,n,p=p0,alternative="less",conf.level= 1-a)
+
+######################################################################
+#
+#Conf Interval for the difference of means
+#
+CityCost<-scan()
+13 21 22 22 24 25 26 26 26 26
+30 32 33 34 34 35 35 35 35 36
+37 37 39 39 39 40 41 41 41 42
+43 44 45 46 50 50 51 51 53 53
+53 55 57 61 62 62 62 66 68 75
+
+SuburbanCost<-scan()
+21 22 25 25 26 26 27 27 28 28
+28 29 31 32 32 35 35 36 37 37
+37 38 38 38 39 40 40 41 41 41
+42 42 43 44 47 47 47 48 50 50
+
+x<-CityCost
+y<-SuburbanCost
+n<-length(x)
+m<-length(y)
+a<-0.1
+
+# METHOD B    # ises diaspores
+t.test(x,y,var.equal=T)
+
+# avises diaspores
+t.test(x,y)
+
+a<-0.1
+t.test(x,y,var.equal=T,conf.level= 1-a)
+t.test(x,y,conf.level= 1-a)
+
+######################################################################
+#
+#test for the difference of means
+#
+
+m0<-3
+t.test(x,y,mu=m0,var.equal=T)
+t.test(x,y,mu=m0)
+
+x<-CityCost
+y<-SuburbanCost
+a<-0.01
+var.test(x,y,conf.level= 1-a)
+a<-0.2
+d0<-2
+var.test(x,y,ratio=d0,conf.level= 1-a)
+
+
+#
+# paired test
+#
+AnalystA<-c(1.60, 1.74, 1.72, 1.85, 1.76, 1.72, 1.78)
+AnalystB<-c(1.72, 1.75, 1.55, 1.67, 2.05, 1.51, 1.70)
+x<-AnalystA
+y<-AnalystB
+
+
+t.test(x,y,paired=T)
+d<-0
+t.test(x,y,mu=d,alternative="greater",paired=T)
+t.test(x,y,mu=d,alternative="less",paired=T)
+
+d<-0.3
+t.test(x,y,mu=d,paired=T)
+t.test(x,y,mu=d,alternative="greater",paired=T)
+t.test(x,y,mu=d,alternative="less",paired=T)
+
+########################################################################
+#
+#  difference of proportions
+
+A<- c(6,120-6)
+B<- c( 5,80-5)
+rbind(A,B)
+prop.test(rbind(A,B),alternative="greater")
+
+
+##############################################
+
+
+smokers  <- c( 83, 90, 129, 70 )
+patients <- c( 86, 93, 136, 82 )
+prop.test(smokers, patients)

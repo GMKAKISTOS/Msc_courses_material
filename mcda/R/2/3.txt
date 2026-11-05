@@ -1,0 +1,152 @@
+
+######################################
+#
+# Plots
+#
+######################################
+
+devAskNewPage(ask=TRUE)    # perimevei priv ftia3ei vea grafikn parastasn 
+
+par(mfrow=c(1,2))
+z<-rnorm(5000) 			# tuxaio deigma mege8ous 5000 apo N(0,1)
+hist(z,nclass=25,col=4,xlab="x",main="Histogram of N(0,1)",xlim=c(-4,4))
+plot(dnorm,xlim=c(-4,4))
+par(mfrow=c(1,1))
+mean(z)
+sd(z)
+
+#################################################################
+
+mM1.unif<-function(n,M){   # n:sample size  M:simulation steps
+	mU<-numeric(M)
+	MU<-numeric(M)
+	for (k in 1:M){
+		U<-runif(n)
+		U<-sort(U)
+		mU[k]<-U[1]
+		MU[k]<-U[n]
+}
+	par(mfrow=c(1,2))
+	hist(mU,probability=TRUE,xlim=c(0,1))
+	hist(MU,probability=TRUE,xlim=c(0,1))
+	par(mfrow=c(1,1))
+	plot(mU,MU,pch=20)
+# oi deigmatikes times tou mesou kai tns diasporas tou X_(1)
+	cat(c(mean(mU),var(mU)),"\n")
+# oi deigmatikes times tou mesou kai tns diasporas tou X_(n)
+	cat(c(mean(MU),var(MU)),"\n")
+# n deigmatikn timn tou cov(X(1),X(n))
+	print(cov(mU,MU))
+# oloi oi upologismoi 8a xa8ouv
+     return()
+}
+a<-mM1.unif(2,100)
+a
+
+######################################################################
+
+require(graphics)  # maths symbols in plots. See plotmath
+
+mM.unif<-function(n,M){
+	mU<-numeric(M)
+	MU<-numeric(M)
+	for (k in 1:M){
+		U<-runif(n)
+		U<-sort(U)
+		mU[k]<-U[1]
+		MU[k]<-U[n]
+# av 8elw va blepw tis diatetagmeves times tou k deigmatos
+#		cat("sample ",k,"\n")  # sto telos allazei gpammn
+#		cat(U,"\n")
+}
+	par(mfrow=c(1,2))
+     	hist(mU,probability=TRUE,main=paste("n=",n),
+				  xlab=expression('X'[(1)]),col="blue",xlim=c(0,1))
+	hist(MU,probability=TRUE,main=paste("n=",n),
+				  xlab=expression('X'[(n)]),col="blue",xlim=c(0,1))
+	par(mfrow=c(1,1))
+	plot(mU,MU,pch=20,col="blue")
+# oi 8ewpitikes times tou mesou kai tns diasporas tou X_(1)
+# kai oi deigmatikes times
+	cat("E(X(1))=",1/(n+1),"var(X(1))=",n/((n+1)^2*(n+2)),"\n")
+	cat(c(mean(mU),var(mU)),"\n")
+# oi 8ewpitikes times tou mesou kai tns diasporas tou X_(n)
+# kai oi deigmatikes times
+	cat("E(X(n))=",n/(n+1),"var(X(n))=",n/((n+1)^2*(n+2)),"\n")
+	cat(c(mean(MU),var(MU)),"\n")
+# n 8ewpitikn timn tou cov(X(1),X(n))
+# kai n deigmatikn timn
+	cat("cov(X(1),X(n))=",1/((n+2)*(n+1)^2),"\n")
+	print(cov(mU,MU))
+
+# n timn tns suvartnsns eivai ta duo diavusmata tou min kai max
+invisible(data.frame(mU,MU))
+}
+mM.unif(2,1000)
+plot(mM.unif(10,1000),pch=18,xlim=c(0,1),ylim=c(0,1))
+
+
+###########################################################################
+#
+#  o as8evns vomos twv megalwv api8mwv
+#
+#  (Poisson distribution)
+##########################################################################
+
+WL.Pois<-function(N,th,e=sqrt(th/N)){
+ 	x<-rpois(N,th)
+ 	y<-rep(0,N)
+	for (n in 1:N) y[n]<-mean(x[1:n])
+
+	plot(y,xlab="n",ylab="(X1+...+Xn)/n",pch=15)
+for (n in 2:N) lines(c(n-1,n),c(y[n-1],y[n]),type="l",col=3) 
+
+# avagrafetai n timn tns parametpou 
+	text(N*0.85,max(y),"theta=")
+	text(N*0.95,max(y),th) 
+	
+# n pragmatikn timn tou mesou
+	abline(a=th,b=0,col="red")
+	abline(a=th+e,b=0,col="blue")
+	abline(a=th-e,b=0,col="blue")
+}
+WL.Pois(20,1.5)
+WL.Pois(40,1.5)
+WL.Pois(80,1.5,0.05)
+WL.Pois(150,8.3)
+
+
+###########################################################################
+#
+#  to kevtpiko opiako 8ewpnma
+#
+#  (Poisson distribution)
+##########################################################################
+
+require(graphics)  # maths symbols in plots. See plotmath
+
+CLT.Pois<-function(n,th){
+M<-1000
+y<-rep(0,M)
+for (k in 1:M) {
+x<-rpois(n,th) 
+y[k]<-mean(x)
+}
+
+# oi 8ewpitikes times tou mesou kai tns diasporas tou bar(X)
+# kai oi deigmatikes times
+mXbar<-th
+varXbar<-th/n
+cat("E(bar(X))=",mXbar,"var(bar(X))=",varXbar,"\n")
+cat(c(mean(y),var(y)),"\n")
+
+hist(y,nclass=20,
+xlab=expression(bar('X'[n])),     
+	#expression(frac('X'[1]+ldots+'X'[n],n)),
+main=paste("n=",n,", th=",th),probability = T,col="blue")
+curve(dnorm(x,mean=mXbar,sd=sqrt(varXbar)),lwd=3,col="red",
+add=T,xlim=c(mXbar-3*sqrt(varXbar),mXbar+3*sqrt(varXbar)))
+}
+CLT.Pois(10,1.4)
+CLT.Pois(30,1.4)
+CLT.Pois(100,2.5)

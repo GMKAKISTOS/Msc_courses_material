@@ -1,0 +1,58 @@
+#####################################################
+#  
+#     E3asknsn a, b, g
+#
+#####################################################
+
+n<-100
+U<-runif(n)
+cat("E(U)=",0.5,"var(U)=",1/12,"Median=",0.5,"\n")
+c(mean(U),var(U),median(U))
+hist(U,nclass=25,col=4,xlab="x",main="Histogram of U(0,1)",
+     xlim=c(-0.1,1.1))
+hist(U,col=4)
+
+
+X<--2*U+1
+cat("E(X)=",-2*0.5+1,"var(X)=",(-2)^2/12,"Median=",-2*0.5+1,"\n")
+c(mean(X),var(X),median(X))
+hist(X,nclass=25,col=4,xlab="x")
+
+
+#####################################################
+#  
+#     E3asknsn d, e
+#
+#####################################################
+
+n<-1000
+U<-runif(n)
+cat("E(U)=",0.5,"var(U)=",1/12,"Median=",0.5,"\n")
+c(mean(U),var(U),median(U))
+hist(U,nclass=25,col=4,main="Histogram of U(0,1)")
+for (th in c(0.8,3,10)){
+Y<--th*log(1-U)
+cat("E(Y)=",th,"var(Y)=",th^2,"Median=",-th*log(0.5),"\n")
+cat(mean(Y),var(Y),median(Y),"\n")
+hist(Y,nclass=25,col=4,main=paste("Histogram of Exp(",th,")"))
+}
+
+#######################################################
+
+n<-100
+Z<-rnorm(n)
+cat("E(Z)=",0,"var(Z)=",1,"Median=",0,"\n")
+c(mean(Z),var(Z),median(Z))
+hist(Z,nclass=25,col=4,main="Histogram of N(0,1)")
+W<-pnorm(Z)
+cat("E(W)=",0.5,"sd(W)=",sqrt(1/12),"\n")
+cat(mean(W),sd(W),"\n")
+hist(W,nclass=25,col=4,main=paste("Histogram of U(0,1)"))
+
+quantile(Z,  probs = c(5, 95)/100)
+qnorm(c(5, 95)/100)
+c(sort(Z)[5],sort(Z)[95])
+c(sort(W)[5],sort(W)[95])
+sort(W)[5]==pnorm(sort(Z)[5])
+sort(W)[95]==pnorm(sort(Z)[95])
+
