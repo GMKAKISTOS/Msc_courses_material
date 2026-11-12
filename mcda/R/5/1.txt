@@ -1,0 +1,278 @@
+
+devAskNewPage(TRUE)
+
+#######################################################################
+#  qq-plot  for normal
+#
+
+x<-c(-1,-0.1,0.16,0.41,0.62,
+	0.80,1.26,1.54,1.71,2.30)
+qqnorm(x)
+qqline(x)
+
+#######################################################################
+#  qq-plot  for any distribution  
+#
+n<-length(x)
+q<-seq((1-0.5)/n,(n-0.5)/n,1/n)
+# q<-seq(from=(1-0.5)/n,by=1/n,length.out=n)
+round(qnorm(q,mean=0,sd=1),3)
+cbind(sort(x),q,round(qnorm(q,mean=0,sd=1),3))
+
+#####################
+
+par(mfrow=c(1,2))
+plot(qnorm(q,mean=0,sd=1),sort(x),pch=20,col="blue",xlim=c(-2,2.5))
+qqline(distribution = function(p) qnorm(p,mean=0,sd=1),x, 
+       prob = c(0.25, 0.75), col = 3)
+
+plot(qnorm(q,mean=0.77,sd=0.97),sort(x),pch=20,col="blue",xlim=c(-2,2.5))
+qqline(distribution = function(p) qnorm(p,mean=0.77,sd=0.97),x, 
+       prob = c(0.25, 0.75), col ="blue")
+qqline(distribution = function(p) qnorm(p,mean=0,sd=1), x, 
+       prob = c(0.25, 0.75), col = 3)
+
+par(mfrow=c(1,1))
+
+#########################################################################
+#  exponential (instead of qnorm use qexp)
+
+plot(qexp(q),sort(x),pch=20,col="blue")
+qqline(distribution = function(p) qexp(p, rate=1), x, 
+       prob = c(0.25, 0.75), col = 3)
+
+# slope<-(quantile(x,probs=0.75)-quantile(x,probs=0.25))/
+#		(qexp(0.75)-qexp(0.25))      
+# intercept<-quantile(x,probs=0.75)-slope*qexp(0.75)
+# abline(a=intercept,b=slope,lwd=1.5,col="green")
+
+
+
+########################################################################
+#
+# Kolmogorov-Smirnof Test
+#
+
+sort(x)
+Fx<-ecdf(x)
+plot(Fx)
+plot(Fx, do.points=FALSE, verticals=TRUE)
+Mx<-mean(x)
+Sx<-sd(x)
+curve(pnorm(x,mean=0,sd=1), add=TRUE, xlim=c(-5,5),col="red")
+curve(pnorm(x,mean=1,sd=1), add=TRUE, xlim=c(-5,5),col="blue")
+curve(pnorm(x,mean=1,sd=0.5), add=TRUE, xlim=c(-5,5),col="blue",lty=2)
+curve(pnorm(x,mean=Mx,sd=Sx), add=TRUE, xlim=c(-5,5),col="green")
+
+###################
+# N(0,1)
+
+ks.test(x,"pnorm")
+ks.test(x,"pnorm",mean=0,sd=1,alternative ="greater") 
+ks.test(x,"pnorm",mean=0,sd=1,alternative ="less") 
+
+#####
+
+n<-length(x)
+order.x<-sort(x)
+ecdf(x)(order.x)
+Fn<-ecdf(x)(order.x)
+Fn
+F0<-pnorm(order.x,mean=0,sd=1)
+cbind(order.x,Fn,F0,Fn-F0,F0-c(0,Fn[-n]))
+
+######################
+# N(1,1)
+ks.test(x,"pnorm",mean=1,sd=1)
+ks.test(x,"pnorm",mean=1,sd=1,alternative ="greater") 
+ks.test(x,"pnorm",mean=1,sd=1,alternative ="less") 
+
+##############################
+# N(1,0.5^2)
+ks.test(x,"pnorm",mean=1,sd=0.5)
+ks.test(x,"pnorm",mean=1,sd=0.5,alternative ="greater") 
+ks.test(x,"pnorm",mean=1,sd=0.5,alternative ="less") 
+
+##############################################################
+# 
+#  N(mean(x),var(x)) 
+# 
+#   DEN EPITREPETAI
+#
+ks.test(x,"pnorm",mean=mean(x),sd=sd(x))
+ks.test(x,"pnorm",mean=mean(x),sd=sd(x),alternative ="greater") 
+ks.test(x,"pnorm",mean=mean(x),sd=sd(x),alternative ="less")
+##############################################################
+
+
+# Exp(rate=1)  E(X)=1/rate
+plot(Fx, do.points=FALSE, verticals=TRUE)
+curve(pexp(x,rate=1), add=TRUE, xlim=c(-2,3),col="blue")
+
+ks.test(x,"pexp",rate=1)
+
+
+########################################################################
+#
+# test of normality
+#
+
+shapiro.test(x)
+
+
+y<-scan()
+0.12 1.01 0.17 1.77 0.27 0.98 0.11 0.12 0.01 0.34
+
+shapiro.test(y)
+
+######################
+
+library(nortest)
+lillie.test
+
+lillie.test(x)
+
+lillie.test(y)
+ks.test(y,"pnorm",mean=mean(y),sd=sd(y))
+
+
+###########################################################################
+
+par(mfrow=c(1,2))
+res<-replicate(4000,{
+	x<-rnorm(25,mean=0,sd=1)
+	c(ks.test(x,"pnorm",mean=mean(x),sd=sd(x))$statistic,
+	  ks.test(x,"pnorm",mean=0,sd=1)$statistic)
+})
+plot(density(res[2,]),main="Distribution of K-S", ylab="",lwd=2,ylim=c(0,15))
+lines(density(res[1,]),lwd=2,lty=2,col="blue")
+legend(0.18,12,legend=c("exact N(0,1) n=25","estimated"),
+	lty=1:2,lwd=c(2,2),col=c(1,"blue"))
+
+res<-replicate(4000,{
+	x<-rnorm(10,mean=0,sd=1)
+	c(ks.test(x,"pnorm",mean=mean(x),sd=sd(x))$statistic,
+	  ks.test(x,"pnorm",mean=0,sd=1)$statistic)
+})
+plot(density(res[2,]),main="Distribution of K-S", ylab="",lwd=2,ylim=c(0,15))
+lines(density(res[1,]),lwd=2,lty=2,col="blue")
+legend(0.18,12,legend=c("exact N(0,1) n=10","estimated"),
+	lty=1:2,lwd=c(2,2),col=c(1,"blue"))
+
+res<-replicate(4000,{
+	x<-rnorm(25,mean=3,sd=2)
+	c(ks.test(x,"pnorm",mean=mean(x),sd=sd(x))$statistic,
+	  ks.test(x,"pnorm",mean=3,sd=2)$statistic)
+})
+plot(density(res[2,]),main="Distribution of K-S", ylab="",lwd=2,ylim=c(0,14))
+lines(density(res[1,]),lwd=2,lty=2,col="blue")
+legend(0.18,12,legend=c("exact N(3,4) n=25","estimated"),
+	lty=1:2,lwd=c(2,2),col=c(1,"blue"))
+
+
+res<-replicate(4000,{
+	x<-rnorm(10,mean=3,sd=2)
+	c(ks.test(x,"pnorm",mean=mean(x),sd=sd(x))$statistic,
+	  ks.test(x,"pnorm",mean=3,sd=2)$statistic)
+})
+plot(density(res[2,]),main="Distribution of K-S", ylab="",lwd=2,ylim=c(0,14))
+lines(density(res[1,]),lwd=2,lty=2,col="blue")
+legend(0.18,12,legend=c("exact N(3,4) n=10","estimated"),
+	lty=1:2,lwd=c(2,2),col=c(1,"blue"))
+
+par(mfrow=c(1,1))
+#################################################################
+
+M<-100
+res<-replicate(M,{y<-rexp(10,1)
+	c(ks.test(y,"pnorm")$p,
+	lillie.test(y)$p,
+	shapiro.test(y)$p)
+})
+
+round(t(res),4)
+sum(t(res)[,2]>t(res)[,3])/M
+
+##################################################################
+
+M<-100
+res<-replicate(M,{y<-rexp(10,1)
+	c(ks.test(y,"pnorm")$p,
+	lillie.test(y)$p,
+	shapiro.test(y)$p  # ,S.ks.gof(y)$p
+)
+})
+
+round(t(res),4)
+sum(t(res)[,2]>t(res)[,3])/M
+#sum(t(res)[,4]>t(res)[,3])/M
+
+shapiro.test(y)
+
+#######################################################################
+#
+#    Applications
+
+####################################
+x<-scan()
+0.2 -0.5 -1.3 -1.6 -0.7 0.4 -0.1 0.0 -0.6 -1.1 -1.2 -0.8
+
+lillie.test(x) 
+shapiro.test(x)
+lillie.test(x)$p; shapiro.test(x)$p
+m0<--0.8
+t.test(x,mu=m0)
+
+###############################################################
+
+CityCost<-scan()
+13 21 22 22 24 25 26 26 26 26
+30 32 33 34 34 35 35 35 35 36
+37 37 39 39 39 40 41 41 41 42
+43 44 45 46 50 50 51 51 53 53
+53 55 57 61 62 62 62 66 68 75
+
+
+SuburbanCost<-scan()
+21 22 25 25 26 26 27 27 28 28
+28 29 31 32 32 35 35 36 37 37
+37 38 38 38 39 40 40 41 41 41
+42 42 43 44 47 47 47 48 50 50
+
+x<-CityCost
+y<-SuburbanCost
+n<-length(x)
+m<-length(y)
+
+lillie.test(x)$p; shapiro.test(x)$p
+lillie.test(y)$p; shapiro.test(y)$p
+
+a<-0.01
+d0<-1
+var.test(x,y,ratio=d0,conf.level= 1-a)
+
+##########################################################
+
+AnalystA<-c(1.60, 1.74, 1.72, 1.85, 1.76, 1.72, 1.78)
+AnalystB<-c(1.72, 1.75, 1.55, 1.67, 2.05, 1.51, 1.70)
+
+ks.test(AnalystA-AnalystB,"pnorm")$p
+lillie.test(AnalystA-AnalystB)$p
+shapiro.test(AnalystA-AnalystB)$p
+t.test(AnalystA,AnalystB,paired=T)$p.value
+
+#############################################################################
+
+# precip {datasets}
+
+hist(precip,nclass=20,xlim=c(0,80),col="blue")
+qqnorm(precip, ylab = "Precipitation [in/yr] for 70 US cities")
+qqline(precip)
+lillie.test(precip)$p; shapiro.test(precip)$p
+t.test(precip,mu=35)
+ks.test(precip,"pnorm",mean=35,sd=13.7)$p
+
+Fx<-ecdf(precip)
+plot(Fx, do.points=FALSE, verticals=TRUE)
+curve(pnorm(x,mean=35,sd=13.7), add=TRUE, xlim=c(0,80),col="red")
+
